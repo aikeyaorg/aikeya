@@ -35,23 +35,17 @@
 			shouldBeDark = mode === 'dark';
 		}
 
-		document.documentElement.classList.toggle('dark', shouldBeDark);
+		const root = document.documentElement;
+		root.classList.toggle('dark', shouldBeDark);
+		// Sync data-docs-theme for docs/blog pages
+		if (mode === 'system') {
+			root.removeAttribute('data-docs-theme');
+		} else {
+			root.setAttribute('data-docs-theme', mode);
+		}
 	}
 
-	// Listen for system theme changes when in system mode
-	$effect(() => {
-		if (!browser) return;
-
-		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-		const handler = () => {
-			if (colorMode === 'system') {
-				applyColorMode('system');
-			}
-		};
-
-		mediaQuery.addEventListener('change', handler);
-		return () => mediaQuery.removeEventListener('change', handler);
-	});
+	// System theme change listener lives in +layout.svelte (always mounted)
 </script>
 
 <div class="page">

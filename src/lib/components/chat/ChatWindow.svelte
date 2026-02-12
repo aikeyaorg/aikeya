@@ -10,6 +10,8 @@
 	import { personaStore } from '$lib/stores/persona.svelte';
 	import { characterStore } from '$lib/stores/character.svelte';
 	import { getLLMProvider, getTTSProvider } from '$lib/services/providers/registry';
+	import { streamChatDirect } from '$lib/services/chat/client-chat';
+	import { isTauri } from '$lib/services/platform';
 	import type { TTSProvider } from '$lib/types';
 	import type { EventDefinition } from '$lib/types/events';
 
@@ -23,7 +25,7 @@
 		addTurnToWorkingMemory,
 		hydrateWorkingMemory,
 		memoryApi,
-		determinFactCategory,
+		determineFactCategory,
 		calculateFactImportance
 	} from '$lib/engine/memory';
 	import { checkAllEvents, eventsApi } from '$lib/engine/events';
@@ -74,20 +76,8 @@
 		}
 
 		// 4. Merge baseline + LLM updates (LLM takes precedence for mood)
+
 		const finalUpdates = mergeUpdates(baselineUpdates, validatedLLMUpdates || {});
-
-		// Debug: log state updates
-		// console.log('=== STATE UPDATES ===');
-		// console.log('Baseline from heuristics:', baselineUpdates);
-		// console.log('Final updates applied:', finalUpdates);
-		// console.log('Before:', {
-		// 	affection: characterStore.state.affection,
-		// 	trust: characterStore.state.trust,
-		// 	intimacy: characterStore.state.intimacy,
-		// 	comfort: characterStore.state.comfort,
-		// 	energy: characterStore.state.energy
-		// });
-
 		// 5. Apply updates to character state
 		characterStore.applyUpdates(finalUpdates);
 
@@ -96,23 +86,13 @@
 			try {
 				await memoryApi.createFact({
 					content: finalUpdates.newMemory,
-					category: determinFactCategory(finalUpdates.newMemory),
+					category: determineFactCategory(finalUpdates.newMemory),
 					importance: calculateFactImportance(finalUpdates.newMemory)
 				});
-				// console.log('[Memory] Saved LLM observation:', finalUpdates.newMemory);
 			} catch (e) {
 				console.debug('[Memory] Failed to save LLM observation:', e);
 			}
 		}
-
-		// console.log('After:', {
-		// 	affection: characterStore.state.affection,
-		// 	trust: characterStore.state.trust,
-		// 	intimacy: characterStore.state.intimacy,
-		// 	comfort: characterStore.state.comfort,
-		// 	energy: characterStore.state.energy
-		// });
-		// console.log('======================');
 
 		// 6. Check for stage transitions (only in Dating Sim Mode)
 		if (characterStore.appMode === 'dating_sim') {
@@ -120,7 +100,6 @@
 			const transition = checkAndApplyStageTransition(characterStore.state, completedEventIds);
 			if (transition.transitioned && transition.toStage) {
 				characterStore.setRelationshipStage(transition.toStage);
-				// console.log(`Stage transition: ${transition.fromStage} -> ${transition.toStage}`);
 			}
 		}
 
@@ -130,13 +109,12 @@
 
 		// 8. Extract and save potential facts
 		const potentialFacts = extractPotentialFacts(dialogue, userMessage);
-		// console.log('[Memory] Extracted facts from conversation:', potentialFacts);
 		for (const factContent of potentialFacts.slice(0, 2)) {
 			try {
 				const userAnalysis = analyzeMessage(userMessage);
 				await memoryApi.createFact({
 					content: factContent,
-					category: determinFactCategory(factContent),
+					category: determineFactCategory(factContent),
 					importance: calculateFactImportance(factContent, userAnalysis.sentiment)
 				});
 			} catch (e) {
@@ -174,19 +152,6 @@
 		const state = characterStore.state;
 		const persona = personaStore.activeCard;
 
-		// Debug: log character state
-		// console.log('=== CHARACTER STATE ===');
-		// console.log({
-		// 	personaName: persona.name,
-		// 	mood: state.mood,
-		// 	energy: state.energy,
-		// 	relationshipStage: state.relationshipStage,
-		// 	affection: state.affection,
-		// 	trust: state.trust,
-		// 	intimacy: state.intimacy,
-		// 	comfort: state.comfort
-		// });
-
 		// Retrieve relevant context from memory
 		const memories = await retrieveRelevantContext(userMessage);
 
@@ -199,11 +164,6 @@
 		};
 
 		const systemPrompt = buildSystemPrompt(context);
-
-		// Debug: log the full system prompt
-		// console.log('=== SYSTEM PROMPT ===');
-		// console.log(systemPrompt);
-		// console.log('================================');
 
 		return systemPrompt;
 	}
@@ -249,55 +209,71 @@
 				throw new Error(`Please configure API key for ${providerMeta.name} in Settings > Providers`);
 			}
 
-			const response = await fetch('/api/chat', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					messages: chatStore.messages.map((m) => ({
-						role: m.role,
-						content: m.content
-					})),
-					provider,
-					model: model || providerMeta?.models?.[0]?.id,
-					apiKey: apiKey || 'not-needed',
-					baseURL: providerConfig.baseUrl || providerMeta?.defaultBaseUrl,
-					systemPrompt
-				})
-			});
-
-			if (!response.ok) {
-				throw new Error('Failed to get response');
-			}
-
-			// Handle streaming response
-			const reader = response.body?.getReader();
-			const decoder = new TextDecoder();
-
-			if (!reader) {
-				throw new Error('No response body');
-			}
-
-			// Add placeholder for assistant message
 			chatStore.addMessage('assistant', '');
 			let fullContent = '';
+			const selectedModel = model || providerMeta?.models?.[0]?.id || '';
 
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
+			if (isTauri()) {
+				await new Promise<void>((resolve, reject) => {
+					streamChatDirect(
+						{
+							messages: chatStore.messages.slice(0, -1).filter((m) => m.content).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+							provider: provider as import('$lib/types').LLMProvider,
+							model: selectedModel,
+							apiKey: apiKey || undefined,
+							baseURL: providerConfig.baseUrl || providerMeta?.defaultBaseUrl,
+							systemPrompt
+						},
+						(text) => { fullContent += text; chatStore.updateLastMessage(fullContent); },
+						(error) => reject(new Error(error)),
+						() => resolve()
+					);
+				});
+			} else {
+				const response = await fetch('/api/chat', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						messages: chatStore.messages
+							.filter((m) => m.content)
+							.map((m) => ({ role: m.role, content: m.content })),
+						provider,
+						model: selectedModel,
+						apiKey: apiKey || 'not-needed',
+						baseURL: providerConfig.baseUrl || providerMeta?.defaultBaseUrl,
+						systemPrompt
+					})
+				});
 
-				const chunk = decoder.decode(value, { stream: true });
-				const lines = chunk.split('\n');
+				if (!response.ok) {
+					let errorMsg = 'Failed to get response';
+					try {
+						const body = await response.json();
+						if (body.error) errorMsg = body.error;
+					} catch {
+						// response wasn't JSON
+					}
+					throw new Error(errorMsg);
+				}
 
-				for (const line of lines) {
-					if (line.startsWith('0:')) {
-						// xsai format: text delta
-						const text = JSON.parse(line.slice(2));
-						fullContent += text;
-						chatStore.updateLastMessage(fullContent);
-					} else if (line.startsWith('e:')) {
-						// Error event from server
-						const { error } = JSON.parse(line.slice(2));
-						throw new Error(error);
+				const reader = response.body?.getReader();
+				const decoder = new TextDecoder();
+				if (!reader) throw new Error('No response body');
+
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+
+					const chunk = decoder.decode(value, { stream: true });
+					for (const line of chunk.split('\n')) {
+						if (line.startsWith('0:')) {
+							const text = JSON.parse(line.slice(2));
+							fullContent += text;
+							chatStore.updateLastMessage(fullContent);
+						} else if (line.startsWith('e:')) {
+							const { error } = JSON.parse(line.slice(2));
+							throw new Error(error);
+						}
 					}
 				}
 			}
@@ -331,6 +307,11 @@
 				});
 			}
 		} catch (err) {
+			// Remove empty assistant placeholder if streaming failed
+			const lastMsg = chatStore.messages[chatStore.messages.length - 1];
+			if (lastMsg?.role === 'assistant' && !lastMsg.content) {
+				chatStore.removeLastMessage();
+			}
 			chatStore.setError(err instanceof Error ? err.message : 'Unknown error');
 			console.error('Chat error:', err);
 		} finally {

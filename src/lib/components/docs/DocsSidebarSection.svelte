@@ -20,7 +20,7 @@
 			{@const href = `/docs/${item.slug}`}
 			{@const isActive = page.url.pathname === href}
 			<li>
-				<a {href} class="section-link" class:active={isActive}>
+				<a {href} class="section-link" class:active={isActive} aria-current={isActive ? 'page' : undefined}>
 					{item.title}
 				</a>
 			</li>
@@ -94,5 +94,19 @@
 			0 1px 0 rgba(255, 255, 255, 0.4) inset,
 			0 0 16px var(--docs-glow-strong),
 			0 4px 8px rgba(1, 178, 255, 0.35);
+	}
+
+	@media (max-width: 768px) {
+		.section-items {
+			gap: 0.25rem;
+		}
+
+		.section-link {
+			padding: 0.625rem 0.75rem;
+			padding-left: 2rem;
+			min-height: 2.75rem;
+			display: flex;
+			align-items: center;
+		}
 	}
 </style>

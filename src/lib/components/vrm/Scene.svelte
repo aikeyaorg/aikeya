@@ -6,6 +6,7 @@
 	import { HemisphereLight, DirectionalLight, ShaderMaterial, Color, BackSide, SRGBColorSpace, ACESFilmicToneMapping, HalfFloatType } from 'three';
 import { EffectComposer, RenderPass, EffectPass, BloomEffect } from 'postprocessing';
 	import VrmModel from './VrmModel.svelte';
+	import OverlayRaycastHandler from '$lib/components/overlay/OverlayRaycastHandler.svelte';
 	import { vrmStore } from '$lib/stores/vrm.svelte';
 	import { displayStore } from '$lib/stores/display.svelte';
 	import { screenshotStore } from '$lib/stores/screenshot.svelte';
@@ -75,9 +76,10 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect } from 'postprocess
 	interface Props {
 		centered?: boolean;
 		locked?: boolean;
+		overlay?: boolean;
 	}
 
-	let { centered = false, locked = false }: Props = $props();
+	let { centered = false, locked = false, overlay = false }: Props = $props();
 
 	const modelUrl = $derived(vrmStore.modelUrl);
 
@@ -146,9 +148,10 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect } from 'postprocess
 
 	onMount(() => {
 		// Setup composer after a small delay to ensure camera is ready
-		const composerTimeout = setTimeout(() => {
+		// Skip composer in overlay mode for proper transparency
+		const composerTimeout = !overlay ? setTimeout(() => {
 			setupComposer();
-		}, 100);
+		}, 100) : null;
 
 		const checkDesktop = () => {
 			isDesktop = window.innerWidth > 768;
@@ -179,8 +182,19 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect } from 'postprocess
 			}
 		});
 
+		// Set transparent background for overlay mode
+		if (overlay) {
+			if (scene) {
+				scene.background = null;
+			}
+			// Ensure renderer clears to transparent
+			if (renderer) {
+				renderer.setClearColor(0x000000, 0);
+			}
+		}
+
 		return () => {
-			clearTimeout(composerTimeout);
+			if (composerTimeout) clearTimeout(composerTimeout);
 			window.removeEventListener('resize', checkDesktop);
 			observer.disconnect();
 			screenshotStore.unregister();
@@ -191,11 +205,6 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect } from 'postprocess
 	// Background color from design language
 	const backgroundColor = $derived(() => {
 		return isDarkMode ? SCENE_COLORS.dark.background : SCENE_COLORS.light.background;
-	});
-
-	// Placeholder color from design language
-	const placeholderColor = $derived(() => {
-		return isDarkMode ? SCENE_COLORS.dark.placeholder : SCENE_COLORS.light.placeholder;
 	});
 
 	// Camera always centered (no sidebar offset needed with new bottom chat bar layout)
@@ -258,14 +267,21 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect } from 'postprocess
 <!-- Camera - view with model centered, distance from display settings -->
 <T.PerspectiveCamera makeDefault position={[cameraTargetX, 1.15, cameraDistance]} fov={30} near={0.1} far={20} />
 
-<!-- Scene Background fallback -->
-<T.Color attach="background" args={[backgroundColor()]} />
+<!-- Overlay mode: enable raycast for click-through detection -->
+{#if overlay}
+	<OverlayRaycastHandler />
+{/if}
 
-<!-- Dot Grid Background Sphere (skybox-style) -->
-<T.Mesh position={[0, 0, 0]}>
-	<T.SphereGeometry args={[15, 64, 32]} />
-	<T is={dotGridMaterial} />
-</T.Mesh>
+<!-- Scene Background (hidden in overlay mode for transparency) -->
+{#if !overlay}
+	<T.Color attach="background" args={[backgroundColor()]} />
+
+	<!-- Dot Grid Background Sphere (skybox-style) -->
+	<T.Mesh position={[0, 0, 0]}>
+		<T.SphereGeometry args={[15, 64, 32]} />
+		<T is={dotGridMaterial} />
+	</T.Mesh>
+{/if}
 
 <!-- Hemisphere lighting matching Three.js example -->
 <!-- https://threejs.org/examples/webgl_lights_hemisphere.html -->
@@ -294,16 +310,12 @@ import { EffectComposer, RenderPass, EffectPass, BloomEffect } from 'postprocess
 <!-- VRM Model -->
 {#if modelUrl}
 	<VrmModel url={modelUrl} />
-{:else}
-	<!-- Placeholder cube when no model loaded -->
-	<T.Mesh position={[0, 1, 0]}>
-		<T.BoxGeometry args={[0.5, 0.5, 0.5]} />
-		<T.MeshStandardMaterial color={placeholderColor()} />
-	</T.Mesh>
 {/if}
 
-<!-- Ground plane - receives shadows -->
-<T.Mesh rotation.x={-Math.PI / 2} position.y={0} receiveShadow>
-	<T.CircleGeometry args={[2, 64]} />
-	<T.ShadowMaterial opacity={0.15} />
-</T.Mesh>
+<!-- Ground plane - receives shadows (hidden in overlay mode) -->
+{#if !overlay}
+	<T.Mesh rotation.x={-Math.PI / 2} position.y={0} receiveShadow>
+		<T.CircleGeometry args={[2, 64]} />
+		<T.ShadowMaterial opacity={0.15} />
+	</T.Mesh>
+{/if}

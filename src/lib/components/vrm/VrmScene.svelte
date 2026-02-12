@@ -9,13 +9,23 @@
 	interface Props {
 		centered?: boolean;
 		locked?: boolean;
+		overlay?: boolean;
 	}
 
-	let { centered = false, locked = false }: Props = $props();
+	let { centered = false, locked = false, overlay = false }: Props = $props();
 	let mounted = $state(false);
 
 	// Custom renderer factory for screenshot support
 	function createRenderer(canvas: HTMLCanvasElement) {
+		// Handle GPU context loss (driver crash, sleep, etc.)
+		canvas.addEventListener('webglcontextlost', (e) => {
+			e.preventDefault();
+			console.warn('WebGL context lost — will restore automatically');
+		});
+		canvas.addEventListener('webglcontextrestored', () => {
+			console.warn('WebGL context restored');
+		});
+
 		const renderer = new WebGLRenderer({
 			canvas,
 			antialias: true,
@@ -23,7 +33,6 @@
 			preserveDrawingBuffer: true
 		});
 
-		// Color management for vibrant, accurate colors
 		renderer.outputColorSpace = SRGBColorSpace;
 		renderer.toneMapping = ACESFilmicToneMapping;
 		renderer.toneMappingExposure = 1.0;
@@ -37,10 +46,8 @@
 		// Pre-generate thumbnails for models without previews on first load
 		const modelsNeedingThumbnails = vrmStore.models.filter((m) => !m.previewUrl);
 		if (modelsNeedingThumbnails.length > 0) {
-			// console.log(`Pre-generating thumbnails for ${modelsNeedingThumbnails.length} models...`);
 			preGenerateThumbnails(modelsNeedingThumbnails, (modelId, dataUrl) => {
 				vrmStore.setModelPreview(modelId, dataUrl);
-				// console.log(`Generated thumbnail for: ${modelId}`);
 			});
 		}
 	});
@@ -49,7 +56,7 @@
 <div class="vrm-scene">
 	{#if mounted}
 		<Canvas {createRenderer}>
-			<Scene {centered} {locked} />
+			<Scene {centered} {locked} {overlay} />
 		</Canvas>
 	{/if}
 </div>

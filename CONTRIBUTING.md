@@ -8,6 +8,7 @@ Thank you for your interest in contributing to Utsuwa! This document provides gu
 
 - Node.js 22 or higher
 - pnpm
+- [Rust toolchain](https://rustup.rs/) (only needed for desktop app development)
 
 ### Development Setup
 
@@ -26,6 +27,7 @@ Thank you for your interest in contributing to Utsuwa! This document provides gu
    pnpm dev
    ```
 5. Open [http://localhost:5173](http://localhost:5173) in your browser
+6. For desktop development, run `pnpm tauri dev` instead (requires Rust)
 
 ## How to Contribute
 
@@ -36,7 +38,7 @@ If you find a bug, please create an issue with:
 - A clear, descriptive title
 - Steps to reproduce the issue
 - Expected vs actual behavior
-- Your environment (browser, OS, Node version)
+- Your environment (web or desktop, browser if web, OS, Node version)
 - Screenshots if applicable
 
 ### Suggesting Features
@@ -82,17 +84,22 @@ src/
 │   ├── data/          # Event definitions and static data
 │   ├── db/            # IndexedDB database (Dexie)
 │   ├── engine/        # Companion engine (state, memory, events, heuristics)
-│   ├── services/      # LLM, TTS, and storage services
+│   ├── services/      # LLM, TTS, STT, and storage services
 │   ├── stores/        # Svelte 5 stores for state management
+│   ├── styles/        # Shared CSS (prose, etc.)
 │   ├── types/         # TypeScript type definitions
 │   └── utils/         # Utility functions
 ├── content/
+│   ├── blog/          # Blog post markdown content
 │   └── docs/          # Documentation site markdown content
 ├── routes/
 │   ├── (app)/         # Main application routes
 │   ├── api/           # API routes
-│   └── docs/          # Documentation site routes
+│   ├── blog/          # Blog routes
+│   ├── docs/          # Documentation site routes
+│   └── overlay/       # Desktop overlay route
 └── app.css            # Global styles
+src-tauri/              # Tauri desktop app (Rust)
 ```
 
 ## Questions?

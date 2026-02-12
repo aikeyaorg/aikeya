@@ -5,13 +5,13 @@ description: High-level architecture of Utsuwa's VRM viewer, chat system, and co
 
 # Architecture Overview
 
-Utsuwa is a client-side web application that combines 3D avatar rendering, LLM chat, text-to-speech, and a relationship simulation engine. Everything runs in the browser with no backend required.
+Utsuwa is a client-side application that combines 3D avatar rendering, LLM chat, text-to-speech, and a relationship simulation engine. Everything runs locally on the user's device — in a browser or the desktop app — with no backend required.
 
 ## System Diagram
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         Browser                                  │
+│                   Client (Browser or Desktop)                    │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │                      SvelteKit App                         │  │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐│  │
@@ -19,8 +19,8 @@ Utsuwa is a client-side web application that combines 3D avatar rendering, LLM c
 │  │  └──────┬──────┘  └──────┬──────┘  └─────────────────────┘│  │
 │  │         │                │                                 │  │
 │  │  ┌──────▼──────┐  ┌──────▼──────┐                         │  │
-│  │  │  xsAI SDK   │  │  Three.js   │                         │  │
-│  │  │ (LLM calls) │  │  + Threlte  │                         │  │
+│  │  │  LLM Client │  │  Three.js   │                         │  │
+│  │  │ xsAI/fetch  │  │  + Threlte  │                         │  │
 │  │  └──────┬──────┘  └──────┬──────┘                         │  │
 │  │         │                │                                 │  │
 │  │  ┌──────▼──────┐  ┌──────▼──────┐  ┌─────────────────────┐│  │
@@ -30,7 +30,7 @@ Utsuwa is a client-side web application that combines 3D avatar rendering, LLM c
 │  │         │                                      │           │  │
 │  │  ┌──────▼─────────────────────────────────────▼──────────┐│  │
 │  │  │              Svelte 5 Runes Stores                     ││  │
-│  │  │   (character.svelte.ts, vrm.svelte.ts, theme.svelte.ts)││  │
+│  │  │  (character.svelte.ts, vrm.svelte.ts, settings.svelte.ts)│  │
 │  │  └──────────────────────────┬────────────────────────────┘│  │
 │  │                             │                              │  │
 │  │  ┌──────────────────────────▼────────────────────────────┐│  │
@@ -43,8 +43,9 @@ Utsuwa is a client-side web application that combines 3D avatar rendering, LLM c
                               ▼
               ┌───────────────────────────────┐
               │       External APIs           │
-              │  OpenAI / Anthropic / etc.    │
-              │  ElevenLabs / Web Speech API  │
+              │  LLM: OpenAI / Anthropic / etc│
+              │  TTS: ElevenLabs / OpenAI TTS │
+              │  STT: Web Speech / Groq       │
               └───────────────────────────────┘
 ```
 
@@ -73,11 +74,15 @@ The 3D avatar system uses Three.js with Threlte (a Svelte wrapper) for integrati
 
 ### Chat System
 
-Messages flow through the xsAI SDK to reach LLM providers.
+Messages flow through two paths depending on the platform:
+- **Web:** SvelteKit server route using the xsAI SDK (`src/routes/api/chat/+server.ts`)
+- **Desktop (Tauri):** Direct fetch to provider APIs (`src/lib/services/chat/client-chat.ts`)
 
 **Key files:**
 - `src/lib/components/chat/BottomChatBar.svelte` — User input interface
 - `src/lib/components/chat/SpeechBubble.svelte` — Message display
+- `src/lib/ai/prompt-builder.ts` — System prompt construction
+- `src/lib/ai/response-parser.ts` — Extract dialogue and state updates from LLM output
 - `src/lib/engine/` — Core companion engine logic
 
 **Flow:**
@@ -105,7 +110,7 @@ User Input
        ▼
 ┌──────────────┐
 │ LLM Provider │ ── Stream response from OpenAI/Anthropic/etc.
-│ (xsAI SDK)   │
+│(xsAI or fetch)│
 └──────┬───────┘
        │
        ▼
@@ -127,7 +132,9 @@ Text-to-speech converts LLM responses to audio with lip-sync.
 
 **Key files:**
 - `src/lib/services/lipsync/analyzer.ts` — Lip-sync audio analysis
-- Provider implementations in `src/lib/services/tts/`
+- `src/lib/services/tts/elevenlabs.ts` — ElevenLabs provider
+- `src/lib/services/tts/openai-tts.ts` — OpenAI TTS provider
+- `src/lib/services/tts/index.ts` — Provider factory and shared audio context
 
 **Supported providers:**
 - ElevenLabs (high quality, requires API key)
@@ -135,11 +142,10 @@ Text-to-speech converts LLM responses to audio with lip-sync.
 
 **Flow:**
 1. LLM response text is sent to TTS provider
-2. Audio is received as a stream or buffer
+2. Audio is received as a buffer
 3. Web Audio API plays the audio
 4. Audio analyzer extracts volume/frequency data
-5. Expression controller maps audio to mouth shapes
-6. Mouth blend shapes are applied to VRM model in real-time
+5. VRM model maps audio data to mouth blend shapes in real-time
 
 ### Memory System
 
@@ -156,9 +162,9 @@ Three-tier memory architecture for context and recall.
 3. **Sessions** — Conversation summaries for long-term context
 
 **Semantic search:**
-Uses `@xenova/transformers` to run embedding models locally in the browser. Facts are embedded and can be retrieved by semantic similarity to the current conversation.
+Uses `@xenova/transformers` to run the `all-MiniLM-L6-v2` embedding model locally on the user's device. Facts are embedded as 384-dimensional vectors and can be retrieved by cosine similarity to the current conversation.
 
-See [Companion System](/docs/technology/companion-system) for detailed memory documentation.
+See [Companion System](/docs/technology/companion-system) and [Memory Graph](/docs/technology/memory-graph) for detailed memory documentation.
 
 ### State Management
 
@@ -167,8 +173,13 @@ Svelte 5 runes-based stores for reactive state.
 **Key stores:**
 - `src/lib/stores/character.svelte.ts` — Character/companion state
 - `src/lib/stores/vrm.svelte.ts` — 3D model state, head tracking
-- `src/lib/stores/theme.svelte.ts` — UI theme (light/dark)
-- `src/lib/stores/settings.svelte.ts` — Provider configurations
+- `src/lib/stores/settings.svelte.ts` — Provider configurations (LLM, TTS, STT)
+- `src/lib/stores/persona.svelte.ts` — Persona card management
+- `src/lib/stores/chat.svelte.ts` — Chat session state
+- `src/lib/stores/tts.svelte.ts` — Text-to-speech state
+- `src/lib/stores/stt.svelte.ts` — Speech-to-text state
+- `src/lib/stores/display.svelte.ts` — Camera distance and display settings
+- `src/lib/stores/overlay.svelte.ts` — Desktop overlay mode state
 
 **Pattern:**
 ```typescript
@@ -186,9 +197,10 @@ $effect(() => {
 All data persists client-side via IndexedDB using Dexie.js.
 
 **Database tables:**
-- `characters` — Character state and relationship data
+- `characterStates` — Character state and relationship data
 - `facts` — Memory facts with embeddings
-- `turns` — Conversation history
+- `sessions` — Conversation session summaries
+- `conversationTurns` — Conversation history
 - `completedEvents` — Milestone events that have fired
 
 **Key file:** `src/lib/db/index.ts`
@@ -204,22 +216,40 @@ All data persists client-side via IndexedDB using Dexie.js.
 ```
 src/
 ├── lib/
+│   ├── ai/               # LLM prompt building and response parsing
 │   ├── components/
-│   │   ├── chat/          # Chat UI components
-│   │   ├── docs/          # Documentation components
+│   │   ├── chat/          # Chat UI (BottomChatBar, SpeechBubble)
+│   │   ├── docs/          # Documentation site components
+│   │   ├── events/        # Event scene and choice UI
+│   │   ├── icons/         # Icon components
+│   │   ├── layout/        # App layout components
+│   │   ├── memory/        # Memory graph visualization
+│   │   ├── onboarding/    # First-run setup
+│   │   ├── overlay/       # Desktop overlay UI
+│   │   ├── settings/      # Settings page components
 │   │   ├── ui/            # Shared UI primitives
 │   │   └── vrm/           # 3D scene and model
-│   ├── config/            # App configuration
-│   ├── data/              # Static data (events, etc.)
-│   ├── db/                # Database schema
-│   ├── engine/            # Companion engine core
-│   ├── services/          # Provider integrations
-│   ├── stores/            # Svelte stores
+│   ├── config/            # App and docs configuration
+│   ├── data/              # Static data (event definitions)
+│   ├── db/                # Database schema and export/import
+│   ├── engine/            # Companion engine (heuristics, stages, state, events, memory)
+│   ├── services/
+│   │   ├── chat/          # Chat client
+│   │   ├── lipsync/       # Audio analysis for lip-sync
+│   │   ├── modules/       # Module system
+│   │   ├── platform/      # Tauri/web platform abstraction
+│   │   ├── providers/     # LLM provider registry and model fetching
+│   │   ├── storage/       # IndexedDB storage layer
+│   │   ├── stt/           # Speech-to-text providers
+│   │   └── tts/           # Text-to-speech providers
+│   ├── stores/            # Svelte 5 runes stores
 │   ├── types/             # TypeScript types
 │   └── utils/             # Utility functions
 ├── routes/
-│   ├── (app)/             # Main app routes
-│   └── docs/              # Documentation site
+│   ├── (app)/             # Main app and settings routes
+│   ├── blog/              # Blog pages
+│   ├── docs/              # Documentation site
+│   └── overlay/           # Desktop overlay route
 └── content/
     └── docs/              # Markdown documentation
 ```
@@ -232,8 +262,8 @@ When the companion's mood changes:
 
 1. Companion engine calculates new mood state
 2. State is written to `character.svelte.ts` store
-3. VRM component reacts to store change
-4. Expression controller maps mood to VRM blend shapes
+3. `VrmModel.svelte` component reacts to store change
+4. Mood is mapped to VRM blend shapes (expressions)
 5. VRM model's face updates in real-time
 
 ### Event Triggering
@@ -246,6 +276,52 @@ When relationship thresholds are crossed:
 4. UI displays event content (if any)
 5. Event ID is added to `completedEvents`
 
+## Desktop Application (Tauri)
+
+The desktop app wraps the same SvelteKit application using Tauri v2.
+
+### Platform Layer
+
+A platform abstraction layer allows code to behave differently on web vs desktop:
+
+**Key files:**
+- `src/lib/services/platform/platform.ts` — `isTauri()` / `isWeb()` detection
+- `src/lib/services/platform/window.ts` — Window management (position, drag, click-through)
+- `src/lib/services/platform/hotkeys.ts` — Global shortcut registration
+
+**Detection pattern:**
+```typescript
+import { isTauri } from '$lib/services/platform';
+
+if (isTauri()) {
+  // Desktop-only code
+  await startDragging();
+}
+```
+
+### Multi-Window Architecture
+
+The desktop app uses two windows:
+
+| Window | Purpose |
+|--------|---------|
+| `main` | Full application with all features |
+| `overlay` | Transparent, always-on-top companion view |
+
+**Switching logic:**
+- Main → Overlay: Invoke `show_overlay` command, hide main window
+- Overlay → Main: Show main window, hide overlay
+
+### Overlay Rendering
+
+For transparent backgrounds in overlay mode:
+1. Tauri window configured with `transparent: true`, `decorations: false`
+2. HTML/body backgrounds set to transparent via CSS
+3. Three.js renderer uses `alpha: true` and `setClearColor(0x000000, 0)`
+4. Scene background set to `null` (no skybox)
+
+**Key file:** `src/routes/overlay/+page.svelte`
+
 ## Technologies
 
 | Category | Technology |
@@ -254,7 +330,8 @@ When relationship thresholds are crossed:
 | Language | TypeScript |
 | 3D Rendering | Three.js + Threlte |
 | VRM Support | @pixiv/three-vrm |
-| LLM Integration | xsAI SDK |
+| LLM Integration | xsAI SDK (web) / direct fetch (desktop) |
+| Desktop | Tauri v2 |
 | Styling | Tailwind CSS 4 |
 | Database | IndexedDB (Dexie.js) |
 | Embeddings | Transformers.js |

@@ -1,6 +1,6 @@
 {
 	"name": "utsuwa",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"packageManager": "pnpm@10.28.2",
 	"description": "An open-source VRM avatar companion app with AI chat, voice, memory, and relationship mechanics",
 	"author": "Charles Dyas",
@@ -25,7 +25,8 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"lint": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test": "echo \"No tests configured\" && exit 0"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.0",
@@ -34,6 +35,10 @@
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/typography": "^0.5.19",
 		"@tailwindcss/vite": "^4.1.18",
+		"@tauri-apps/api": "^2.10.1",
+		"@tauri-apps/cli": "^2.10.0",
+		"@tauri-apps/plugin-fs": "^2.4.5",
+		"@tauri-apps/plugin-global-shortcut": "^2.3.1",
 		"@types/three": "^0.182.0",
 		"mdsvex": "^0.12.6",
 		"pagefind": "^1.4.0",
@@ -48,6 +53,7 @@
 	"dependencies": {
 		"@pixiv/three-vrm": "^3.4.5",
 		"@pixiv/three-vrm-animation": "^3.4.5",
+		"@tauri-apps/plugin-opener": "^2.5.3",
 		"@threlte/core": "^8.3.1",
 		"@xenova/transformers": "^2.17.2",
 		"@xsai/generate-text": "^0.4.2",

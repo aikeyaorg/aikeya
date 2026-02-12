@@ -17,6 +17,8 @@
 	import { personaStore } from '$lib/stores/persona.svelte';
 	import { debugEventsStore } from '$lib/stores/debugEvents.svelte';
 	import { getLLMProvider, getTTSProvider } from '$lib/services/providers/registry';
+	import { streamChatDirect } from '$lib/services/chat/client-chat';
+	import { isTauri } from '$lib/services/platform';
 	import type { TTSProvider } from '$lib/types';
 	import type { StateUpdates } from '$lib/types/character';
 	import type { EventDefinition } from '$lib/types/events';
@@ -32,7 +34,7 @@
 		addTurnToWorkingMemory,
 		hydrateWorkingMemory,
 		memoryApi,
-		determinFactCategory,
+		determineFactCategory,
 		calculateFactImportance,
 		backfillEmbeddings,
 		getEmbeddingBackfillStatus
@@ -70,8 +72,13 @@
 	$effect(() => {
 		isMemoryReady = false;
 		(async () => {
-			await hydrateWorkingMemory();
-			isMemoryReady = true;
+			try {
+				await hydrateWorkingMemory();
+				isMemoryReady = true;
+			} catch (e) {
+				console.error('Failed to hydrate working memory:', e);
+				isMemoryReady = true; // Don't block the app
+			}
 		})();
 	});
 
@@ -81,15 +88,15 @@
 			embeddingState = state;
 		});
 
-		// Start loading the embedding model
 		initEmbeddingModel().then(async (ready) => {
 			if (ready) {
-				// Check if we need to backfill embeddings
 				const status = await getEmbeddingBackfillStatus();
 				if (status.withoutEmbeddings > 0) {
-					const result = await backfillEmbeddings();
+					await backfillEmbeddings();
 				}
 			}
+		}).catch((e) => {
+			console.error('Failed to initialize embedding model:', e);
 		});
 
 		return unsub;
@@ -135,7 +142,7 @@
 			try {
 				await memoryApi.createFact({
 					content: finalUpdates.newMemory,
-					category: determinFactCategory(finalUpdates.newMemory),
+					category: determineFactCategory(finalUpdates.newMemory),
 					importance: calculateFactImportance(finalUpdates.newMemory)
 				});
 			} catch (e) {
@@ -163,7 +170,7 @@
 				const userAnalysis = analyzeMessage(userMessage);
 				await memoryApi.createFact({
 					content: factContent,
-					category: determinFactCategory(factContent),
+					category: determineFactCategory(factContent),
 					importance: calculateFactImportance(factContent, userAnalysis.sentiment)
 				});
 			} catch (e) {
@@ -242,41 +249,60 @@
 				throw new Error(`Please configure API key for ${providerMeta.name} in Settings > Providers`);
 			}
 
-			const response = await fetch('/api/chat', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					messages: chatStore.messages.map((m) => ({ role: m.role, content: m.content })),
-					provider,
-					model: model || providerMeta?.models?.[0]?.id,
-					apiKey: apiKey || 'not-needed',
-					baseURL: providerConfig.baseUrl || providerMeta?.defaultBaseUrl,
-					systemPrompt
-				})
-			});
-
-			if (!response.ok) throw new Error('Failed to get response');
-
-			const reader = response.body?.getReader();
-			const decoder = new TextDecoder();
-			if (!reader) throw new Error('No response body');
-
 			chatStore.addMessage('assistant', '');
 			let fullContent = '';
+			const selectedModel = model || providerMeta?.models?.[0]?.id || '';
 
-			while (true) {
-				const { done, value } = await reader.read();
-				if (done) break;
+			if (isTauri()) {
+				await new Promise<void>((resolve, reject) => {
+					streamChatDirect(
+						{
+							messages: chatStore.messages.slice(0, -1).map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+							provider: provider as import('$lib/types').LLMProvider,
+							model: selectedModel,
+							apiKey: apiKey || undefined,
+							baseURL: providerConfig.baseUrl || providerMeta?.defaultBaseUrl,
+							systemPrompt
+						},
+						(text) => { fullContent += text; chatStore.updateLastMessage(fullContent); },
+						(error) => reject(new Error(error)),
+						() => resolve()
+					);
+				});
+			} else {
+				const response = await fetch('/api/chat', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						messages: chatStore.messages.map((m) => ({ role: m.role, content: m.content })),
+						provider,
+						model: selectedModel,
+						apiKey: apiKey || 'not-needed',
+						baseURL: providerConfig.baseUrl || providerMeta?.defaultBaseUrl,
+						systemPrompt
+					})
+				});
 
-				const chunk = decoder.decode(value, { stream: true });
-				for (const line of chunk.split('\n')) {
-					if (line.startsWith('0:')) {
-						const text = JSON.parse(line.slice(2));
-						fullContent += text;
-						chatStore.updateLastMessage(fullContent);
-					} else if (line.startsWith('e:')) {
-						const { error } = JSON.parse(line.slice(2));
-						throw new Error(error);
+				if (!response.ok) throw new Error('Failed to get response');
+
+				const reader = response.body?.getReader();
+				const decoder = new TextDecoder();
+				if (!reader) throw new Error('No response body');
+
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+
+					const chunk = decoder.decode(value, { stream: true });
+					for (const line of chunk.split('\n')) {
+						if (line.startsWith('0:')) {
+							const text = JSON.parse(line.slice(2));
+							fullContent += text;
+							chatStore.updateLastMessage(fullContent);
+						} else if (line.startsWith('e:')) {
+							const { error } = JSON.parse(line.slice(2));
+							throw new Error(error);
+						}
 					}
 				}
 			}
@@ -363,10 +389,11 @@
 	<main class="main-content">
 		<!-- VRM Stage (Full Background) -->
 		<div class="stage-container">
-			{#if vrmStore.isLoading}
-				<div class="loading-overlay">
-					<div class="loading-spinner"></div>
-					<span>Loading model...</span>
+			{#if vrmStore.isLoading || !vrmStore.modelUrl}
+				<div class="loading-dots">
+					<span class="dot"></span>
+					<span class="dot"></span>
+					<span class="dot"></span>
 				</div>
 			{/if}
 
@@ -447,33 +474,40 @@
 		z-index: 0;
 	}
 
-	.loading-overlay {
+	.loading-dots {
 		position: absolute;
 		inset: 0;
 		display: flex;
-		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: 1rem;
-		background: rgba(0, 0, 0, 0.3);
-		backdrop-filter: blur(4px);
+		gap: 0.5rem;
 		z-index: 20;
-		color: white;
-		font-size: 0.875rem;
 	}
 
-	.loading-spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid rgba(255, 255, 255, 0.2);
-		border-top-color: white;
+	.loading-dots .dot {
+		width: 8px;
+		height: 8px;
 		border-radius: 50%;
-		animation: spin 1s linear infinite;
+		background: var(--text-tertiary);
+		animation: bounce 1.4s ease-in-out infinite;
 	}
 
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
+	.loading-dots .dot:nth-child(2) {
+		animation-delay: 0.16s;
+	}
+
+	.loading-dots .dot:nth-child(3) {
+		animation-delay: 0.32s;
+	}
+
+	@keyframes bounce {
+		0%, 80%, 100% {
+			opacity: 0.3;
+			transform: scale(0.8);
+		}
+		40% {
+			opacity: 1;
+			transform: scale(1);
 		}
 	}
 
@@ -489,34 +523,46 @@
 		width: fit-content;
 		max-width: 600px;
 		padding: 0.75rem 1rem;
-		background: color-mix(in srgb, var(--ctp-red, #d20f39) 90%, var(--color-neutral-900));
-		backdrop-filter: blur(8px);
-		border-radius: 0.75rem;
+		background: linear-gradient(180deg, #ff6b6b 0%, #ee5a5a 100%);
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 16px;
 		color: white;
 		font-size: 0.875rem;
 		cursor: pointer;
 		z-index: 50;
 		animation: errorSlideDownShake 0.5s ease-out;
+		box-shadow:
+			0 4px 20px rgba(238, 90, 90, 0.4),
+			0 2px 4px rgba(0, 0, 0, 0.1),
+			inset 0 1px 0 rgba(255, 255, 255, 0.3);
+		text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
 	}
 
 	.error-toast span,
 	.chat-error-toast span {
 		flex: 1;
+		word-wrap: break-word;
 	}
 
 	.toast-dismiss {
-		background: none;
+		background: rgba(255, 255, 255, 0.2);
 		border: none;
-		color: white;
-		opacity: 0.8;
+		padding: 0.25rem;
+		border-radius: 6px;
 		cursor: pointer;
-		padding: 0;
-		font-size: 1rem;
+		color: white;
+		opacity: 0.9;
+		font-size: 0.875rem;
 		line-height: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.15s ease;
 	}
 
 	.toast-dismiss:hover {
 		opacity: 1;
+		background: rgba(255, 255, 255, 0.3);
 	}
 
 	@keyframes errorSlideDownShake {

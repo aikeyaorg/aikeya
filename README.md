@@ -8,7 +8,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Utsuwa is an open-source alternative to Grok Companion.** This is a platform where you can have a virtual AI waifu that learns and grows with you, bundled with optional mechanics inspired by Japanese [dating sim](https://en.wikipedia.org/wiki/Dating_sim) games. Utsuwa is privacy-focused - your data lives entirely in your browser.
+**Utsuwa is an open-source alternative to Grok Companion.** This is a platform where you can have a virtual AI waifu that learns and grows with you, bundled with optional mechanics inspired by Japanese [dating sim](https://en.wikipedia.org/wiki/Dating_sim) games. Utsuwa is privacy-focused - your data is stored locally and never leaves your device.
 
 "Utsuwa" means "vessel" in Japanese - a container for AI to inhabit visually.
 
@@ -18,7 +18,7 @@
 - **Model-Centric UI**: Full-screen 3D model with unobtrusive overlay controls
 - **3D Speech Bubbles**: Chat responses appear as bubbles that track the model's head in 3D space
 - **Chat Interface**: Bottom-centered input bar with streaming responses
-- **Voice Input**: Speech-to-text using Web Speech API with real-time audio visualization
+- **Voice Input**: Speech-to-text via Groq (Whisper) or Web Speech API with real-time audio visualization
 - **LLM Integration**: Support for 7 LLM providers including OpenAI, Anthropic, Google, and local options
 - **Text-to-Speech**: Support for ElevenLabs and OpenAI TTS
 - **Lip-sync**: Audio-driven mouth animation synced to TTS playback
@@ -29,10 +29,11 @@
 - **Memory Graph**: Interactive visualization showing how memories connect semantically
 - **Data Export/Import**: Download your data as a save file, restore anytime
 - **Theming**: Light and dark mode support with system preference detection
+- **Desktop App** *(beta, macOS only)*: Native desktop app with transparent overlay mode — your companion floats on your desktop
 
 ### Local-First Storage
 
-All your data is stored locally in your browser using IndexedDB:
+All your data is stored locally on your device using IndexedDB:
 - No database setup required
 - Works offline after initial load
 - Export/import save files to back up or transfer your data
@@ -46,11 +47,24 @@ Build a meaningful relationship with your AI companion through a dating sim-insp
 - **8 Relationship Stages**: Progress from Stranger → Acquaintance → Friend → Close Friend → Romantic Interest → Dating → Committed → Soulmate
 - **Dynamic Mood**: Real-time emotions with causality tracking (she remembers *why* she feels a certain way)
 - **Visual Novel Events**: Milestone moments, romantic scenes, and choices that matter - with custom dialogue and branching responses
-- **Semantic Memory**: Facts are indexed with vector embeddings for meaning-based retrieval - "outdoor activities" finds memories about hiking. Runs entirely in-browser using Transformers.js, no API calls
+- **Semantic Memory**: Facts are indexed with vector embeddings for meaning-based retrieval - "outdoor activities" finds memories about hiking. Runs locally using Transformers.js, no API calls
 - **Natural Progression**: Hybrid system combining app heuristics + LLM suggestions for believable relationship growth
 - **Time-Aware**: Your companion notices when you've been away and reacts accordingly
 
 See the [Companion System Architecture](https://utsuwa.ai/docs/technology/companion-system) for full details.
+
+### Desktop Application (Beta)
+
+A native desktop app built with Tauri that includes all web features plus:
+
+- **Overlay Mode**: Your companion floats on your desktop with a transparent background
+- **Always-on-Top**: The overlay stays visible over all other windows
+- **Draggable Positioning**: Click and drag the character to reposition anywhere on screen
+- **Floating Chat**: Expandable chat input that appears when you click the chat icon
+- **Window Switching**: Seamlessly switch between the full app and overlay mode
+- **Global Hotkeys**: Push-to-talk, toggle overlay, and focus chat with keyboard shortcuts
+
+The desktop app uses the same codebase as the web version — your save files are compatible between both.
 
 ## Supported Providers
 
@@ -67,13 +81,14 @@ See the [Companion System Architecture](https://utsuwa.ai/docs/technology/compan
 |----------|-----------|
 | **Cloud** | ElevenLabs, OpenAI TTS |
 
-### STT (Speech-to-Text)
+### STT Providers (2)
 
-| Provider | Description |
-|----------|-------------|
-| **Web Speech API** | Browser-native speech recognition. No API key required. Works in Chrome, Edge, and Safari. |
+| Category | Providers |
+|----------|-----------|
+| **Cloud** | Groq (Whisper) |
+| **Browser** | Web Speech API (no API key required) |
 
-Voice input is accessed via the microphone button in the chat bar. The audio visualizer provides real-time feedback while speaking.
+Voice input is accessed via the microphone button in the chat bar. Groq STT uses Whisper for accurate transcription on any platform (including desktop). Web Speech API works without an API key in Chrome, Edge, and Safari. If a Groq API key is configured, it takes priority automatically.
 
 ## Getting Started
 
@@ -82,7 +97,7 @@ Voice input is accessed via the microphone button in the chat bar. The audio vis
 
 ### Try it Online
 
-No installation required! Use Utsuwa directly in your browser at **[utsuwa.ai](https://utsuwa.ai)**
+Use Utsuwa directly at **[utsuwa.ai](https://utsuwa.ai)** — no installation required. Or download the macOS desktop app from [GitHub Releases](https://github.com/dyascj/utsuwa/releases).
 
 ### Self-Hosting
 
@@ -92,7 +107,7 @@ If you prefer to run Utsuwa locally or host your own instance:
 
 - Node.js 22+
 - pnpm (recommended) or npm
-- A modern browser (Chrome, Firefox, Safari, Edge)
+- A modern browser (Chrome, Firefox, Safari, Edge) — for the web version
 
 #### Installation
 
@@ -110,6 +125,18 @@ pnpm dev
 
 The app will be available at `http://localhost:5173`
 
+#### Running the Desktop App (Beta)
+
+To run the desktop app from source, you'll need the [Rust toolchain](https://rustup.rs/) in addition to the web prerequisites:
+
+```bash
+# Install Rust (if not already installed)
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Run the desktop app
+pnpm tauri dev
+```
+
 #### Configuration
 
 1. Click the **Settings** (gear icon) in the sidebar
@@ -121,7 +148,7 @@ The app will be available at `http://localhost:5173`
    - Enter your API key
    - Configure voice settings
 
-All API keys are stored locally in your browser and are never sent to any server except the respective API providers.
+All API keys are stored locally on your device and are never sent to any server except the respective API providers.
 
 #### Loading a VRM Model
 
@@ -131,7 +158,7 @@ All API keys are stored locally in your browser and are never sent to any server
 
 #### Data Management
 
-Your companion data is stored locally in your browser. To back up or transfer your data:
+Your companion data is stored locally on your device. To back up or transfer your data:
 
 1. Go to **Settings > Data**
 2. Click **Export Save** to download a JSON file with all your data
@@ -151,16 +178,21 @@ utsuwa/
 │   │   ├── data/           # Event definitions and static data
 │   │   ├── db/             # IndexedDB database (Dexie)
 │   │   ├── engine/         # Companion engine (state, memory, events)
-│   │   ├── services/       # LLM, TTS, storage services
+│   │   ├── services/       # LLM, TTS, STT, storage services
 │   │   ├── stores/         # Svelte 5 stores (state management)
+│   │   ├── styles/         # Shared CSS (prose, etc.)
 │   │   ├── types/          # TypeScript types
 │   │   └── utils/          # Utility functions
 │   ├── content/
-│   │   └── docs/           # Documentation site content
+│   │   ├── blog/           # Blog post markdown content
+│   │   └── docs/           # Documentation site markdown content
 │   └── routes/
 │       ├── (app)/          # Main application routes
 │       ├── api/            # API routes
-│       └── docs/           # Documentation site routes
+│       ├── blog/           # Blog routes
+│       ├── docs/           # Documentation site routes
+│       └── overlay/        # Desktop overlay route
+├── src-tauri/               # Tauri desktop app (Rust)
 ├── static/
 │   └── models/             # Place default VRM models here
 └── package.json
@@ -169,10 +201,14 @@ utsuwa/
 ## Scripts
 
 ```bash
-pnpm dev       # Start development server
-pnpm build     # Build for production
-pnpm preview   # Preview production build
-pnpm lint      # Type-check and lint the project
+pnpm dev          # Start web development server
+pnpm build        # Build web app for production
+pnpm preview      # Preview production build
+pnpm lint         # Type-check the project (svelte-check)
+pnpm check        # Same as lint (alias)
+pnpm check:watch  # Type-check in watch mode
+pnpm tauri dev    # Run the desktop app in development mode
+pnpm tauri build  # Build desktop app installer
 ```
 
 ## Roadmap
@@ -192,22 +228,19 @@ pnpm lint      # Type-check and lint the project
 - [x] Time-based mood and relationship decay/recovery
 - [x] Local-first IndexedDB storage with export/import
 - [x] Theme system with light/dark modes
-- [x] Voice input via Web Speech API
+- [x] Voice input via Groq STT (Whisper) and Web Speech API
+- [x] Desktop application with transparent overlay mode (macOS only, Windows/Linux planned)
 
 ### In Progress / Planned
 
 - [ ] **Companion Gender System** - Gender selection with male/female specific animations and behaviors
-- [ ] **Multi-provider STT** - Support for additional speech-to-text providers beyond Web Speech API
+- [ ] **Multi-provider STT** - Support for additional speech-to-text providers beyond Groq and Web Speech API
 - [ ] **Enhanced User Controls** - More granular control over companion behavior and responses
 - [ ] **Custom Lighting Controls** - Adjust 3D scene lighting, environment, and atmosphere
 - [ ] **LLM-Controlled Expressions** - Dynamic facial animations and emotions driven by LLM responses
 - [ ] **Live2D Support** - Alternative to VRM for 2D animated avatars
 - [ ] **Expanded Default Avatars** - More built-in 3D avatar options to choose from
 - [ ] **Photo Mode** - Full-featured photo mode with character posing, lighting adjustments, and high-quality saves
-
-### Future
-
-- [ ] **Desktop Application** - Native app for Windows, macOS, and Linux with enhanced features
 
 ## Contributing
 
@@ -234,6 +267,7 @@ Utsuwa is built on the shoulders of these excellent projects:
 - **[Three.js](https://github.com/mrdoob/three.js)** - 3D graphics engine
 - **[Threlte](https://github.com/threlte/threlte)** - Svelte components for Three.js
 - **[SvelteKit](https://github.com/sveltejs/kit)** - Web application framework
+- **[Tauri](https://github.com/tauri-apps/tauri)** - Desktop application framework
 - **[Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)** - Utility-first CSS framework
 - **[Transformers.js](https://github.com/xenova/transformers.js)** - In-browser ML for semantic memory embeddings
 

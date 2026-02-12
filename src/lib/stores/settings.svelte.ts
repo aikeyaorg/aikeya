@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import type { ProviderConfig } from '$lib/types';
-import { LLM_PROVIDERS, TTS_PROVIDERS } from '$lib/services/providers/registry';
+import { LLM_PROVIDERS, TTS_PROVIDERS, STT_PROVIDERS } from '$lib/services/providers/registry';
+import { DEFAULT_HOTKEYS, type HotkeyConfig } from '$lib/services/platform/hotkeys';
 
 export type ProviderCategory = 'llm' | 'tts' | 'stt';
 
@@ -12,6 +13,9 @@ function createSettingsStore() {
 	// Track which providers have been explicitly added by user
 	let addedProviders = $state<Record<string, boolean>>({});
 
+	// Desktop hotkey configuration
+	let hotkeys = $state<HotkeyConfig>({ ...DEFAULT_HOTKEYS });
+
 	// Load from localStorage on init
 	if (browser) {
 		const saved = localStorage.getItem('utsuwa-settings');
@@ -20,6 +24,7 @@ function createSettingsStore() {
 				const parsed = JSON.parse(saved);
 				providerConfigs = parsed.providerConfigs ?? {};
 				addedProviders = parsed.addedProviders ?? {};
+				hotkeys = { ...DEFAULT_HOTKEYS, ...parsed.hotkeys };
 
 				// Migrate old settings format if needed
 				if (parsed.anthropicApiKey && !providerConfigs.anthropic) {
@@ -57,10 +62,27 @@ function createSettingsStore() {
 				'utsuwa-settings',
 				JSON.stringify({
 					providerConfigs,
-					addedProviders
+					addedProviders,
+					hotkeys
 				})
 			);
 		}
+	}
+
+	// Sync settings across windows (main ↔ overlay)
+	if (browser) {
+		window.addEventListener('storage', (e) => {
+			if (e.key === 'utsuwa-settings' && e.newValue) {
+				try {
+					const parsed = JSON.parse(e.newValue);
+					providerConfigs = parsed.providerConfigs ?? {};
+					addedProviders = parsed.addedProviders ?? {};
+					hotkeys = { ...DEFAULT_HOTKEYS, ...parsed.hotkeys };
+				} catch {
+					// Ignore malformed data from other window
+				}
+			}
+		});
 	}
 
 	// Provider configuration
@@ -108,7 +130,8 @@ function createSettingsStore() {
 		// Find the provider metadata to check if it requires an API key
 		const llmProvider = LLM_PROVIDERS.find((p) => p.id === providerId);
 		const ttsProvider = TTS_PROVIDERS.find((p) => p.id === providerId);
-		const provider = llmProvider || ttsProvider;
+		const sttProvider = STT_PROVIDERS.find((p) => p.id === providerId);
+		const provider = llmProvider || ttsProvider || sttProvider;
 
 		if (!provider) return false;
 
@@ -122,8 +145,7 @@ function createSettingsStore() {
 
 	// Get all configured providers for a category
 	function getConfiguredProviders(category: ProviderCategory): string[] {
-		const providers = category === 'llm' ? LLM_PROVIDERS : TTS_PROVIDERS;
-		// STT uses TTS provider list for now (many providers support both)
+		const providers = category === 'llm' ? LLM_PROVIDERS : category === 'tts' ? TTS_PROVIDERS : STT_PROVIDERS;
 
 		return providers
 			.filter((p) => {
@@ -136,7 +158,7 @@ function createSettingsStore() {
 
 	// Get all added providers (even if not fully configured)
 	function getAddedProviders(category: ProviderCategory): string[] {
-		const providers = category === 'llm' ? LLM_PROVIDERS : TTS_PROVIDERS;
+		const providers = category === 'llm' ? LLM_PROVIDERS : category === 'tts' ? TTS_PROVIDERS : STT_PROVIDERS;
 
 		return providers.filter((p) => isProviderAdded(p.id)).map((p) => p.id);
 	}
@@ -207,6 +229,21 @@ function createSettingsStore() {
 		}
 	}
 
+	// Hotkey configuration
+	function setHotkey(action: keyof HotkeyConfig, shortcut: string) {
+		hotkeys[action] = shortcut;
+		save();
+	}
+
+	function getHotkey(action: keyof HotkeyConfig): string {
+		return hotkeys[action];
+	}
+
+	function resetHotkeys() {
+		hotkeys = { ...DEFAULT_HOTKEYS };
+		save();
+	}
+
 	return {
 		// Provider configs
 		get providerConfigs() {
@@ -249,7 +286,15 @@ function createSettingsStore() {
 		// Cached models
 		setCachedModels,
 		getCachedModels,
-		clearCachedModels
+		clearCachedModels,
+
+		// Hotkeys
+		get hotkeys() {
+			return hotkeys;
+		},
+		setHotkey,
+		getHotkey,
+		resetHotkeys
 	};
 }
 
