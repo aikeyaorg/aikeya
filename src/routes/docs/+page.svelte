@@ -24,6 +24,7 @@
 			<DocsVersionChip />
 			<img src="/brand-assets/logo.svg" alt="Aikeya" class="hero-logo" />
 			<p class="hero-tagline">A vessel for the soul of your virtual companion.</p>
+			<p class="hero-tagline">3xxHPHvpiSxFcdg65CaorjjSfsqiBWoUWLLeUimTpump</p>
 			<div class="hero-actions">
 				<a href="/" class="btn-primary">Try Live</a>
 				<a href={GITHUB_RELEASES} target="_blank" rel="noopener noreferrer" class="btn-secondary">
