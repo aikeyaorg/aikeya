@@ -99,7 +99,7 @@
 				<span class="tile-label">X (Twitter)</span>
 				<span class="tile-shine"></span>
 			</a>
-			<a href="https://pump.fun" class="link-tile" style="--delay: 1; --tile-color: #01B2FF; --tile-glow: rgba(1, 178, 255, 0.3)">
+			<a href="https://pump.fun/coin/3xxHPHvpiSxFcdg65CaorjjSfsqiBWoUWLLeUimTpump" class="link-tile" style="--delay: 1; --tile-color: #01B2FF; --tile-glow: rgba(1, 178, 255, 0.3)">
 				<div class="tile-icon-wrapper">
 					<span class="tile-icon">
 						<Icon name="zap" size={20} />
