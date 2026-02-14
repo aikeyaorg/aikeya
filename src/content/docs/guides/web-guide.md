@@ -5,7 +5,7 @@ description: How to set up and use Aikeya on the web.
 
 # Web Guide
 
-This guide walks you through using Aikeya, whether on the hosted version at [utsuwa.ai](https://utsuwa.ai) or a self-hosted instance.
+This guide walks you through using Aikeya, whether on the hosted version at [aikeya.org](https://aikeya.org) or a self-hosted instance.
 
 ## Self-Hosting Setup
 

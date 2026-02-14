@@ -25,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 - App Version: [Web or Desktop]
 - Browser: [e.g. Chrome 120, Firefox 121] (web only)
 - OS: [e.g. macOS 14, Windows 11]
-- Utsuwa Version: [e.g. 0.0.1]
+- Aikeya Version: [e.g. 0.0.1]
 
 ## Additional context
 Add any other context about the problem here.

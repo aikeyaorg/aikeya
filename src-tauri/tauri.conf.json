@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Utsuwa",
+  "productName": "Aikeya",
   "version": "0.2.4",
-  "identifier": "com.utsuwa.app",
+  "identifier": "com.aikeya.app",
   "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Utsuwa",
+        "title": "Aikeya",
         "width": 1200,
         "height": 800,
         "minWidth": 800,
@@ -23,7 +23,7 @@
       },
       {
         "label": "overlay",
-        "title": "Utsuwa Companion",
+        "title": "Aikeya Companion",
         "url": "/overlay",
         "width": 400,
         "height": 600,
@@ -51,7 +51,7 @@
     ],
     "category": "Entertainment",
     "shortDescription": "Open Source AI Soul Vessel",
-    "longDescription": "Utsuwa is a VRM avatar viewer with LLM chat and TTS. Load VRM models, chat with AI, and have the avatar speak responses with lip-sync.",
+    "longDescription": "Aikeya is a VRM avatar viewer with LLM chat and TTS. Load VRM models, chat with AI, and have the avatar speak responses with lip-sync.",
     "macOS": {
       "minimumSystemVersion": "10.15",
       "entitlements": null,

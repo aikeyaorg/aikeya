@@ -89,6 +89,26 @@
 				<span class="tile-label">Docs</span>
 				<span class="tile-shine"></span>
 			</a>
+			<a href="https://x.com" class="link-tile" style="--delay: 1; --tile-color: #01B2FF; --tile-glow: rgba(1, 178, 255, 0.3)">
+				<div class="tile-icon-wrapper">
+					<span class="tile-icon">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
+					</span>
+					<span class="tile-icon-shine"></span>
+				</div>
+				<span class="tile-label">X (Twitter)</span>
+				<span class="tile-shine"></span>
+			</a>
+			<a href="https://pump.fun" class="link-tile" style="--delay: 1; --tile-color: #01B2FF; --tile-glow: rgba(1, 178, 255, 0.3)">
+				<div class="tile-icon-wrapper">
+					<span class="tile-icon">
+						<Icon name="zap" size={20} />
+					</span>
+					<span class="tile-icon-shine"></span>
+				</div>
+				<span class="tile-label">pump.fun</span>
+				<span class="tile-shine"></span>
+			</a>
 		</div>
 
 		<!-- System Info -->

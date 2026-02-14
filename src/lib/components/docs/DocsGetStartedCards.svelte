@@ -14,7 +14,7 @@
 			No installation required. Runs entirely in your browser — works on desktop and mobile.
 		</p>
 		<div class="card-actions">
-			<a href="https://utsuwa.ai" target="_blank" rel="noopener noreferrer" class="card-btn primary">
+			<a href="https://aikeya.org" target="_blank" rel="noopener noreferrer" class="card-btn primary">
 				<span>Open App</span>
 				<Icon name="arrow-right" size={14} />
 				<div class="btn-shine"></div>
