@@ -16,7 +16,7 @@ export interface VrmModel {
 const DEFAULT_MODELS: VrmModel[] = [
 	{
 		id: 'default-utsuwa',
-		name: 'Utsuwa',
+		name: 'Aikeya',
 		url: '/models/utsuwa.vrm',
 		previewUrl: undefined,
 		isDefault: true,

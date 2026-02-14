@@ -1,11 +1,11 @@
 ---
 title: Web Guide
-description: How to set up and use Utsuwa on the web.
+description: How to set up and use Aikeya on the web.
 ---
 
 # Web Guide
 
-This guide walks you through using Utsuwa, whether on the hosted version at [utsuwa.ai](https://utsuwa.ai) or a self-hosted instance.
+This guide walks you through using Aikeya, whether on the hosted version at [utsuwa.ai](https://utsuwa.ai) or a self-hosted instance.
 
 ## Self-Hosting Setup
 
@@ -18,8 +18,8 @@ This guide walks you through using Utsuwa, whether on the hosted version at [uts
 ### Installation
 
 ```bash
-git clone https://github.com/dyascj/utsuwa.git
-cd utsuwa
+git clone https://github.com/aikeyaorg/aikeya.git
+cd aikeya
 pnpm install
 pnpm dev
 ```
@@ -41,7 +41,7 @@ All API keys are stored locally on your device and never sent anywhere except th
 
 ### 2. Load a VRM Model
 
-Utsuwa comes with a default avatar, but you can load your own:
+Aikeya comes with a default avatar, but you can load your own:
 
 1. Go to **Settings > Character**
 2. Click **Load VRM** to select a local `.vrm` file
@@ -80,4 +80,4 @@ All data is stored locally on your device.
 
 ## Themes
 
-Utsuwa supports light and dark modes with automatic system preference detection. Go to **Settings > Display** to change your appearance mode.
+Aikeya supports light and dark modes with automatic system preference detection. Go to **Settings > Display** to change your appearance mode.

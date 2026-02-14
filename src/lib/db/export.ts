@@ -166,10 +166,10 @@ export async function importSave(
 				// Build merged character state
 				const mergedState = {
 					// Persona fields from persona or defaults
-					name: (firstPersona?.name as string) || 'Utsuwa',
+					name: (firstPersona?.name as string) || 'Aikeya',
 					systemPrompt:
 						(firstPersona?.systemPrompt as string) ||
-						'You are a friendly AI assistant named Utsuwa.',
+						'You are a friendly AI assistant named Aikeya.',
 					extensions: (firstPersona?.extensions as Record<string, unknown>) || {},
 					// Character fields from state or defaults
 					mood: (firstCharState?.mood as MoodState) || {
@@ -278,13 +278,13 @@ export function validateSaveFile(json: unknown): SaveFile | LegacySaveFile | nul
 export function getSaveFilePreview(saveFile: SaveFile | LegacySaveFile): SaveFilePreview {
 	const isV2 = saveFile.version.startsWith('2.');
 
-	let characterName = 'Utsuwa';
+	let characterName = 'Aikeya';
 	if (isV2) {
 		const v2 = saveFile as SaveFile;
-		characterName = v2.data.character?.name || 'Utsuwa';
+		characterName = v2.data.character?.name || 'Aikeya';
 	} else {
 		const v1 = saveFile as LegacySaveFile;
-		characterName = (v1.data.personas?.[0]?.name as string) || 'Utsuwa';
+		characterName = (v1.data.personas?.[0]?.name as string) || 'Aikeya';
 	}
 
 	return {

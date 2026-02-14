@@ -23,8 +23,8 @@
 	let direction = $state<'forward' | 'back'>('forward');
 
 	// Form state
-	let characterName = $state('Utsuwa');
-	let systemPrompt = $state('You are a helpful, but rage-baity assistant named Utsuwa. You speak like a snarky anime girl.');
+	let characterName = $state('Aikeya');
+	let systemPrompt = $state('You are a helpful, but rage-baity assistant named Aikeya. You speak like a snarky anime girl.');
 	let appMode = $state<AppMode>('dating_sim');
 
 	const currentStepIndex = $derived(steps.indexOf(currentStep));
@@ -36,7 +36,7 @@
 
 			// Save data when leaving certain steps
 			if (currentStep === 'character') {
-				characterStore.updatePersona({ name: characterName.trim() || 'Utsuwa', systemPrompt });
+				characterStore.updatePersona({ name: characterName.trim() || 'Aikeya', systemPrompt });
 			}
 			if (currentStep === 'mode') {
 				characterStore.setAppMode(appMode);

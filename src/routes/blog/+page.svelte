@@ -9,10 +9,10 @@
 </script>
 
 <svelte:head>
-	<title>Blog - Utsuwa</title>
+	<title>Blog - Aikeya</title>
 	<meta
 		name="description"
-		content="Development updates and behind-the-scenes notes from building Utsuwa."
+		content="Development updates and behind-the-scenes notes from building Aikeya."
 	/>
 </svelte:head>
 

@@ -1,11 +1,11 @@
 ---
 title: Contributing
-description: How to contribute to the Utsuwa project.
+description: How to contribute to the Aikeya project.
 ---
 
 # Contributing
 
-Contributions to Utsuwa are welcome. This page covers how to get set up and submit changes.
+Contributions to Aikeya are welcome. This page covers how to get set up and submit changes.
 
 ## Prerequisites
 
@@ -18,8 +18,8 @@ Contributions to Utsuwa are welcome. This page covers how to get set up and subm
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/utsuwa.git
-   cd utsuwa
+   git clone https://github.com/YOUR_USERNAME/aikeya.git
+   cd aikeya
    ```
 3. Install dependencies:
    ```bash
@@ -105,4 +105,4 @@ src-tauri/              # Tauri desktop app (Rust)
 
 ## License
 
-By contributing to Utsuwa, you agree that your contributions will be licensed under the MIT License.
+By contributing to Aikeya, you agree that your contributions will be licensed under the MIT License.

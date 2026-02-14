@@ -5,7 +5,7 @@
 	import { GITHUB_REPO, GITHUB_RELEASES } from '$lib/config/site';
 
 	const sectionDescriptions: Record<string, string> = {
-		'Overview': 'What Utsuwa is and how it works',
+		'Overview': 'What Aikeya is and how it works',
 		'Guides': 'Setup instructions for web and desktop',
 		'Technology': 'Architecture, companion system, memory',
 		'Community': 'Contributing and resources'
@@ -13,8 +13,8 @@
 </script>
 
 <svelte:head>
-	<title>Documentation - Utsuwa</title>
-	<meta name="description" content="Utsuwa documentation - guides, setup instructions, and contribution guidelines." />
+	<title>Documentation - Aikeya</title>
+	<meta name="description" content="Aikeya documentation - guides, setup instructions, and contribution guidelines." />
 </svelte:head>
 
 <div class="landing">
@@ -22,7 +22,7 @@
 		<div class="hero-fade"></div>
 		<div class="hero-content">
 			<DocsVersionChip />
-			<img src="/brand-assets/logo.svg" alt="Utsuwa" class="hero-logo" />
+			<img src="/brand-assets/logo.svg" alt="Aikeya" class="hero-logo" />
 			<p class="hero-tagline">A vessel for the soul of your virtual companion.</p>
 			<div class="hero-actions">
 				<a href="/" class="btn-primary">Try Live</a>
@@ -60,7 +60,7 @@
 
 		<div class="oss-cta">
 			<p>
-				Utsuwa is open source.
+				Aikeya is open source.
 				<a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer">View on GitHub</a>
 				or <a href="/docs/community/contributing">start contributing</a>.
 			</p>

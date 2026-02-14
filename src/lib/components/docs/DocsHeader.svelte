@@ -34,7 +34,7 @@
 			</button>
 		{/if}
 		<a href="/docs" class="logo desktop-logo">
-			<img src="/brand-assets/logo.svg" alt="Utsuwa" class="logo-img" />
+			<img src="/brand-assets/logo.svg" alt="Aikeya" class="logo-img" />
 		</a>
 	</div>
 	{#if !hideSearch}
@@ -43,7 +43,7 @@
 		</div>
 	{/if}
 	<a href="/docs" class="logo mobile-logo">
-		<img src="/brand-assets/logo.svg" alt="Utsuwa" class="logo-img" />
+		<img src="/brand-assets/logo.svg" alt="Aikeya" class="logo-img" />
 	</a>
 	<div class="header-right">
 		<nav class="header-nav">

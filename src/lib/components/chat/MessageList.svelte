@@ -24,7 +24,7 @@
 				<Icon name="message-square" size={48} strokeWidth={1.5} />
 			</div>
 			<p>Start a conversation</p>
-			<span>Type a message to chat with Utsuwa</span>
+			<span>Type a message to chat with Aikeya</span>
 		</div>
 	{:else}
 		{#each chatStore.messages as message (message.id)}

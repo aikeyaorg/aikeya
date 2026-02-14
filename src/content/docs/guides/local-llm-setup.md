@@ -1,6 +1,6 @@
 ---
 title: Local LLM Setup
-description: How to set up and connect local LLMs to Utsuwa using Ollama or LM Studio.
+description: How to set up and connect local LLMs to Aikeya using Ollama or LM Studio.
 ---
 
 # Local LLM Setup
@@ -47,7 +47,7 @@ ollama serve
 
 This starts the Ollama API on `http://localhost:11434`.
 
-### Connecting to Utsuwa
+### Connecting to Aikeya
 
 1. Open **Settings** (gear icon)
 2. Navigate to the **Character** tab
@@ -74,7 +74,7 @@ Open LM Studio and browse the built-in model catalog. Search for a model, click 
 
 This starts an OpenAI-compatible API on `http://localhost:1234`.
 
-### Connecting to Utsuwa
+### Connecting to Aikeya
 
 1. Open **Settings** (gear icon)
 2. Navigate to the **Character** tab
@@ -118,7 +118,7 @@ The port doesn't match. Default ports:
 | Ollama | 11434 |
 | LM Studio | 1234 |
 
-Make sure the URL in Utsuwa matches the port your server is using.
+Make sure the URL in Aikeya matches the port your server is using.
 
 ### Slow responses
 
@@ -128,7 +128,7 @@ Make sure the URL in Utsuwa matches the port your server is using.
 
 ### CORS errors in browser
 
-If you're running Utsuwa in a browser and getting CORS errors with Ollama, set the origins environment variable before starting the server:
+If you're running Aikeya in a browser and getting CORS errors with Ollama, set the origins environment variable before starting the server:
 
 ```bash
 OLLAMA_ORIGINS=* ollama serve

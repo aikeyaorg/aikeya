@@ -26,7 +26,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.metadata?.title || 'Docs'} - Utsuwa</title>
+	<title>{data.metadata?.title || 'Docs'} - Aikeya</title>
 	{#if data.metadata?.description}
 		<meta name="description" content={data.metadata.description} />
 	{/if}
@@ -50,7 +50,7 @@
 		url: `${SITE_URL}/docs/${data.slug}`,
 		publisher: {
 			'@type': 'Organization',
-			name: 'Utsuwa',
+			name: 'Aikeya',
 			url: '${SITE_URL}'
 		}
 	})}</script>`}

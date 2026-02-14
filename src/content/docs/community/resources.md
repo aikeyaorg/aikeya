@@ -1,11 +1,11 @@
 ---
 title: Resources
-description: Tools and marketplaces to enhance your Utsuwa experience.
+description: Tools and marketplaces to enhance your Aikeya experience.
 ---
 
 # Resources
 
-A collection of tools and marketplaces that pair well with Utsuwa. Whether you want to create your own avatar from scratch or find the perfect accessories, these resources have you covered.
+A collection of tools and marketplaces that pair well with Aikeya. Whether you want to create your own avatar from scratch or find the perfect accessories, these resources have you covered.
 
 ---
 
@@ -19,11 +19,11 @@ A collection of tools and marketplaces that pair well with Utsuwa. Whether you w
 
 - Create fully custom VRM models from scratch
 - Intuitive drawing-based workflow for hair, face, and clothing
-- Export directly to `.vrm` format, ready to load into Utsuwa
+- Export directly to `.vrm` format, ready to load into Aikeya
 - Available on Windows, macOS, and iPad
 - Completely free to use
 
-VRoid Studio is the easiest way to go from zero to a personalized avatar. Design your character, export the VRM file, and drop it into Utsuwa.
+VRoid Studio is the easiest way to go from zero to a personalized avatar. Design your character, export the VRM file, and drop it into Aikeya.
 
 [Get VRoid Studio &rarr;](https://vroid.com/en/studio)
 
@@ -42,6 +42,6 @@ VRoid Studio is the easiest way to go from zero to a personalized avatar. Design
 - Props, textures, and custom items
 - Both free and paid items from independent creators
 
-Many creators sell VRoid-compatible outfits and accessories on BOOTH that you can import into VRoid Studio, customize, and then export as a VRM for use in Utsuwa.
+Many creators sell VRoid-compatible outfits and accessories on BOOTH that you can import into VRoid Studio, customize, and then export as a VRM for use in Aikeya.
 
 [Browse BOOTH &rarr;](https://booth.pm/)

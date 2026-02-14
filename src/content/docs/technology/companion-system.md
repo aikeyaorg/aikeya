@@ -1,6 +1,6 @@
 ---
 title: Companion System
-description: Architecture documentation for Utsuwa's companion relationship and character state system.
+description: Architecture documentation for Aikeya's companion relationship and character state system.
 ---
 
 # Companion System Architecture
@@ -21,7 +21,7 @@ The Companion System is the core engine that manages relationship state, charact
 
 ## App Modes
 
-Utsuwa supports two distinct modes:
+Aikeya supports two distinct modes:
 
 ### Companion Mode
 

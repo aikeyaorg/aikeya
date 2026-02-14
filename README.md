@@ -1,16 +1,16 @@
-# Utsuwa (器)
+# Aikeya (器)
 
 <p align="center">
-  <img src="static/brand-assets/read-me-banner.png" alt="Utsuwa Banner" />
+  <img src="static/brand-assets/read-me-banner.png" alt="Aikeya Banner" />
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-22+-green.svg)](https://nodejs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-**Utsuwa is an open-source alternative to Grok Companion.** This is a platform where you can have a virtual AI waifu that learns and grows with you, bundled with optional mechanics inspired by Japanese [dating sim](https://en.wikipedia.org/wiki/Dating_sim) games. Utsuwa is privacy-focused - your data is stored locally and never leaves your device.
+**Aikeya is an open-source alternative to Grok Companion.** This is a platform where you can have a virtual AI waifu that learns and grows with you, bundled with optional mechanics inspired by Japanese [dating sim](https://en.wikipedia.org/wiki/Dating_sim) games. Aikeya is privacy-focused - your data is stored locally and never leaves your device.
 
-"Utsuwa" means "vessel" in Japanese - a container for AI to inhabit visually.
+"Aikeya" - a container for AI to inhabit visually.
 
 ## Features
 
@@ -51,7 +51,7 @@ Build a meaningful relationship with your AI companion through a dating sim-insp
 - **Natural Progression**: Hybrid system combining app heuristics + LLM suggestions for believable relationship growth
 - **Time-Aware**: Your companion notices when you've been away and reacts accordingly
 
-See the [Companion System Architecture](https://utsuwa.ai/docs/technology/companion-system) for full details.
+See the [Companion System Architecture](https://aikeya.org/docs/technology/companion-system) for full details.
 
 ### Desktop Application (Beta)
 
@@ -93,15 +93,15 @@ Voice input is accessed via the microphone button in the chat bar. Groq STT uses
 ## Getting Started
 
 > [!NOTE]
-> Utsuwa is in its very early development stages. If you're using the app, **save your data often**. Early versions may not have backwards-compatible save states and could require manual reformatting.
+> Aikeya is in its very early development stages. If you're using the app, **save your data often**. Early versions may not have backwards-compatible save states and could require manual reformatting.
 
 ### Try it Online
 
-Use Utsuwa directly at **[utsuwa.ai](https://utsuwa.ai)** — no installation required. Or download the macOS desktop app from [GitHub Releases](https://github.com/dyascj/utsuwa/releases).
+Use Aikeya directly at **[aikeya.org](https://aikeya.org)** — no installation required. Or download the macOS desktop app from [GitHub Releases](https://github.com/aikeyaorg/aikeya).
 
 ### Self-Hosting
 
-If you prefer to run Utsuwa locally or host your own instance:
+If you prefer to run Aikeya locally or host your own instance:
 
 #### Prerequisites
 
@@ -113,8 +113,8 @@ If you prefer to run Utsuwa locally or host your own instance:
 
 ```bash
 # Clone the repository
-git clone https://github.com/dyascj/utsuwa.git
-cd utsuwa
+git clone https://github.com/aikeyaorg/aikeya.git
+cd aikeya
 
 # Install dependencies
 pnpm install
@@ -168,7 +168,7 @@ Your companion data is stored locally on your device. To back up or transfer you
 ## Project Structure
 
 ```
-utsuwa/
+aikeya/
 ├── src/
 │   ├── lib/
 │   │   ├── ai/             # LLM response parsing and prompt building
@@ -252,7 +252,7 @@ For information about security considerations and how to report vulnerabilities,
 
 ## Acknowledgments
 
-Utsuwa is built on the shoulders of these excellent projects:
+Aikeya is built on the shoulders of these excellent projects:
 
 ### Inspiration
 

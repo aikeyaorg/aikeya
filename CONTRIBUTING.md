@@ -1,6 +1,6 @@
-# Contributing to Utsuwa
+# Contributing to Aikeya
 
-Thank you for your interest in contributing to Utsuwa! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Aikeya! This document provides guidelines and information for contributors.
 
 ## Getting Started
 
@@ -15,8 +15,8 @@ Thank you for your interest in contributing to Utsuwa! This document provides gu
 1. Fork the repository
 2. Clone your fork:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/utsuwa.git
-   cd utsuwa
+   git clone https://github.com/YOUR_USERNAME/aikeya.git
+   cd aikeya
    ```
 3. Install dependencies:
    ```bash
@@ -108,4 +108,4 @@ If you have questions about contributing, feel free to open an issue for discuss
 
 ## License
 
-By contributing to Utsuwa, you agree that your contributions will be licensed under the MIT License.
+By contributing to Aikeya, you agree that your contributions will be licensed under the MIT License.

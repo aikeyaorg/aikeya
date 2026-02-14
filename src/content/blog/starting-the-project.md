@@ -1,6 +1,6 @@
 ---
 title: Starting the Project
-description: Why I started building Utsuwa, an open-source VRM avatar companion as an alternative to closed platforms.
+description: Why I started building Aikeya, an open-source VRM avatar companion as an alternative to closed platforms.
 date: '2026-01-24'
 image: /blog/blog-thumbnail.png
 tag: DevLog
@@ -12,7 +12,7 @@ We've opened Pandora's box. AI is out there forever whether we like it or not. T
 
 It's taken projects like this to start pushing things in a different direction. To give control back to the user. To prove you can have an AI companion that respects your privacy, runs on your terms, and doesn't phone home to some corporate server every time you talk to it.
 
-That's the idea behind Utsuwa. The name means "vessel" in Japanese. A container for AI to inhabit visually. You bring the model, the voice, and the LLM provider. The app is just the shell. Everything runs locally, everything is yours.
+A container for AI to inhabit visually. You bring the model, the voice, and the LLM provider. The app is just the shell. Everything runs locally, everything is yours.
 
 ## The inspiration (and the problem)
 

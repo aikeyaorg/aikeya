@@ -1,17 +1,17 @@
 ---
 title: Troubleshooting
-description: Common issues and solutions for Utsuwa.
+description: Common issues and solutions for Aikeya.
 ---
 
 # Troubleshooting
 
-This guide covers common issues you might encounter when using Utsuwa and how to resolve them.
+This guide covers common issues you might encounter when using Aikeya and how to resolve them.
 
 ## Node.js Version Issues
 
 ### "Unsupported engine" error
 
-Utsuwa requires Node.js 22 or higher. If you see an error like:
+Aikeya requires Node.js 22 or higher. If you see an error like:
 
 ```bash
 npm error engine Unsupported engine
@@ -138,7 +138,7 @@ If the mic button shows an error in the browser:
 Your browser or OS is blocking microphone access:
 
 1. **Browser permissions** - Click the lock icon in the address bar and allow microphone access
-2. **System permissions** - On macOS, go to System Settings > Privacy & Security > Microphone and enable access for your browser or Utsuwa
+2. **System permissions** - On macOS, go to System Settings > Privacy & Security > Microphone and enable access for your browser or Aikeya
 
 ## Memory & Performance
 
@@ -206,7 +206,7 @@ This often means something loaded out of order:
 
 If your issue isn't covered here:
 
-1. Check the [GitHub Issues](https://github.com/dyascj/utsuwa/issues) for similar problems
+1. Check the [GitHub Issues](https://github.com/aikeyaorg/aikeya/issues) for similar problems
 2. Open a new issue with:
    - App version (web or desktop) and browser if web
    - Steps to reproduce

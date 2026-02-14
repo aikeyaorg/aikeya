@@ -1,11 +1,11 @@
 ---
 title: Desktop Guide
-description: How to install and use the Utsuwa desktop application with overlay mode.
+description: How to install and use the Aikeya desktop application with overlay mode.
 ---
 
 # Desktop Guide
 
-Utsuwa Desktop is an application that brings your AI companion to your desktop with a transparent overlay mode. Your companion can float over other applications, always visible while you work.
+Aikeya Desktop is an application that brings your AI companion to your desktop with a transparent overlay mode. Your companion can float over other applications, always visible while you work.
 
 Currently available for **macOS** only. Windows and Linux support is planned.
 
@@ -13,11 +13,11 @@ Currently available for **macOS** only. Windows and Linux support is planned.
 
 ### Download
 
-Head to the [GitHub Releases](https://github.com/The-Lab-by-Ordinary-Company/utsuwa/releases) page and download the `.dmg` disk image for macOS.
+Head to the [GitHub Releases](https://github.com/aikeyaorg/aikeya) page and download the `.dmg` disk image for macOS.
 
-Open the `.dmg`, drag Utsuwa to your Applications folder, and you're good to go.
+Open the `.dmg`, drag Aikeya to your Applications folder, and you're good to go.
 
-> **macOS Gatekeeper:** Since Utsuwa isn't signed with an Apple Developer ID, macOS may show a warning when you first open it. See [Gatekeeper Warning](#gatekeeper-warning) below for how to resolve this.
+> **macOS Gatekeeper:** Since Aikeya isn't signed with an Apple Developer ID, macOS may show a warning when you first open it. See [Gatekeeper Warning](#gatekeeper-warning) below for how to resolve this.
 
 ### Building from Source
 
@@ -31,8 +31,8 @@ If you prefer to build it yourself:
 
 ```bash
 # Clone the repo
-git clone https://github.com/The-Lab-by-Ordinary-Company/utsuwa.git
-cd utsuwa
+git clone https://github.com/aikeyaorg/aikeya.git
+cd aikeya
 
 # Install dependencies
 pnpm install
@@ -50,7 +50,7 @@ The dev command launches both a development server and the desktop window. The b
 
 ### Main Window
 
-The main window provides the full Utsuwa experience — same as the web version with all features:
+The main window provides the full Aikeya experience — same as the web version with all features:
 
 - VRM avatar with animations
 - Chat interface
@@ -108,11 +108,11 @@ Some features are still being worked on:
 
 ### Gatekeeper Warning
 
-macOS may show **"Utsuwa is damaged and can't be opened"** or **"Utsuwa can't be opened because it is from an unidentified developer"** when launching for the first time. This is because the app isn't signed with an Apple Developer ID certificate.
+macOS may show **"Aikeya is damaged and can't be opened"** or **"Aikeya can't be opened because it is from an unidentified developer"** when launching for the first time. This is because the app isn't signed with an Apple Developer ID certificate.
 
 **Option 1 — Right-click to open:**
 
-1. Find Utsuwa in your Applications folder
+1. Find Aikeya in your Applications folder
 2. **Right-click** (or Control-click) the app
 3. Select **Open** from the context menu
 4. Click **Open** on the dialog that appears
@@ -143,14 +143,14 @@ If not installed, run:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-If you downloaded a release binary and it won't launch, try downloading it again or check the [GitHub Issues](https://github.com/The-Lab-by-Ordinary-Company/utsuwa/issues) page.
+If you downloaded a release binary and it won't launch, try downloading it again or check the [GitHub Issues](https://github.com/aikeyaorg/aikeya/issues) page.
 
 ### Overlay background not transparent
 
 This can happen if the renderer isn't properly configured. Try:
 
 1. Exit and relaunch the app
-2. Make sure you're on the latest version from [Releases](https://github.com/The-Lab-by-Ordinary-Company/utsuwa/releases)
+2. Make sure you're on the latest version from [Releases](https://github.com/aikeyaorg/aikeya)
 
 ### Character facing wrong direction
 

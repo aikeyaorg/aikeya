@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head>
-	<title>Utsuwa</title>
+	<title>Aikeya</title>
 	<meta name="description" content="VRM Avatar Viewer with Chat & TTS" />
 </svelte:head>
 

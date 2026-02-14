@@ -16,7 +16,7 @@
 					<circle cx="50" cy="50" r="15" fill="currentColor" opacity="0.8"/>
 				</svg>
 			</div>
-			<span class="logo-text">Utsuwa</span>
+			<span class="logo-text">Aikeya</span>
 		</a>
 	</div>
 

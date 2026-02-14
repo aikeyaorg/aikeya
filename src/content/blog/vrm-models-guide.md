@@ -30,7 +30,7 @@ Under the hood, a VRM file is just a glTF 2.0 binary (`.glb`) with extra metadat
 - **MToon materials** for that anime-style toon shading most VRM models use
 - **License metadata** baked right into the file (more on this later)
 
-The expression system is particularly cool. VRM defines standard expressions like `happy`, `angry`, `sad`, `relaxed`, and `surprised`, plus lip sync phonemes (`aa`, `ih`, `ou`, `ee`, `oh`) mapped to Japanese vowels. That's why apps like Utsuwa can do automatic lip sync with any VRM model without any extra setup.
+The expression system is particularly cool. VRM defines standard expressions like `happy`, `angry`, `sad`, `relaxed`, and `surprised`, plus lip sync phonemes (`aa`, `ih`, `ou`, `ee`, `oh`) mapped to Japanese vowels. That's why apps like Aikeya can do automatic lip sync with any VRM model without any extra setup.
 
 ## Where to find free VRM models
 
@@ -92,9 +92,9 @@ If you see models labeled as VRM 0.x or VRM 1.0, here's the short version: VRM 1
 
 Most apps support both versions. VRoid Studio lets you export in either format. If you're making a new model, go with 1.0. If you're downloading existing models, don't stress about the version since your app will probably handle it either way.
 
-## Using VRM with Utsuwa
+## Using VRM with Aikeya
 
-This is exactly what Utsuwa was built for. Drop in any VRM file and you've got a 3D companion with automatic lip sync, facial expressions, and spring bone physics. The model renders in your browser or desktop app with MToon shading, and expressions are driven by the AI's responses.
+This is exactly what Aikeya was built for. Drop in any VRM file and you've got a 3D companion with automatic lip sync, facial expressions, and spring bone physics. The model renders in your browser or desktop app with MToon shading, and expressions are driven by the AI's responses.
 
 You can grab a free model from VRoid Hub, make one in VRoid Studio, or commission something custom. The VRM standard means it all just works without any conversion or setup. Load the file, connect your LLM, and your companion is ready to go.
 

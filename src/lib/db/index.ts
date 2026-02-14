@@ -69,9 +69,9 @@ class UtsuwaDatabase extends Dexie {
 					existingStates[0];
 
 				// Read persona from localStorage
-				let personaName = 'Utsuwa';
+				let personaName = 'Aikeya';
 				let personaPrompt =
-					'You are a friendly AI assistant named Utsuwa. You communicate through a VRM avatar and can express emotions through facial expressions and gestures. Be helpful, conversational, and engaging.';
+					'You are a friendly AI assistant named Aikeya. You communicate through a VRM avatar and can express emotions through facial expressions and gestures. Be helpful, conversational, and engaging.';
 				let personaExtensions = {};
 
 				if (typeof window !== 'undefined') {

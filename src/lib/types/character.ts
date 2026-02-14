@@ -156,13 +156,13 @@ export function createDefaultMood(): MoodState {
 
 // Default system prompt for new characters
 const DEFAULT_SYSTEM_PROMPT =
-	'You are a friendly AI assistant named Utsuwa. You communicate through a VRM avatar and can express emotions through facial expressions and gestures. Be helpful, conversational, and engaging.';
+	'You are a friendly AI assistant named Aikeya. You communicate through a VRM avatar and can express emotions through facial expressions and gestures. Be helpful, conversational, and engaging.';
 
 export function createDefaultCharacterState(): Omit<CharacterState, 'id'> {
 	const now = new Date();
 	return {
 		// Persona fields
-		name: 'Utsuwa',
+		name: 'Aikeya',
 		systemPrompt: DEFAULT_SYSTEM_PROMPT,
 		extensions: {},
 

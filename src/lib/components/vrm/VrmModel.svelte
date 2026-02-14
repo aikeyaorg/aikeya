@@ -20,7 +20,7 @@
 			leftLowerArm: { x: 0, y: -Math.PI * 0.1, z: 0 },
 			rightLowerArm: { x: 0, y: Math.PI * 0.1, z: 0 }
 		},
-		// VRM 1.0 (VRoid Studio models like Utsuwa)
+		// VRM 1.0 (VRoid Studio models like Aikeya)
 		'1': {
 			sceneRotationY: 0, // Already facing camera
 			leftUpperArm: { x: Math.PI * 0.05, y: 0, z: -Math.PI * 0.4 },

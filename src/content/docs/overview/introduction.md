@@ -1,6 +1,6 @@
 ---
 title: Introduction
-description: What is Utsuwa and how to get started.
+description: What is Aikeya and how to get started.
 ---
 
 # Introduction
@@ -13,15 +13,15 @@ description: What is Utsuwa and how to get started.
 - Local-first — your data stays on your device
 - Desktop app with transparent overlay mode (macOS only, Windows/Linux planned)
 
-## What is Utsuwa?
+## What is Aikeya?
 
 Most AI companions today are either text-only chat interfaces or locked behind proprietary platforms. You don't own the character and you don't own the data.
 
-Utsuwa takes a different approach. It gives you a 3D avatar that speaks, remembers your conversations, and develops a relationship with you over time. No accounts, no subscriptions. Your data stays on your device.
+Aikeya takes a different approach. It gives you a 3D avatar that speaks, remembers your conversations, and develops a relationship with you over time. No accounts, no subscriptions. Your data stays on your device.
 
 Connect any LLM provider you want — OpenAI, Anthropic, Google, DeepSeek, xAI, or a local model through Ollama or LM Studio. Add voice with ElevenLabs or OpenAI TTS. Use Groq or your browser's built-in speech recognition for voice input. Load any VRM model as your companion's body. Everything is modular and swappable.
 
-"Utsuwa" means "vessel" in Japanese — a container for AI to inhabit visually. The app is the vessel; you choose what goes inside.
+"Aikeya" - a container for AI to inhabit visually. The app is the vessel; you choose what goes inside.
 
 ## Getting Started
 
@@ -33,4 +33,4 @@ import DocsGetStartedCards from '$lib/components/docs/DocsGetStartedCards.svelte
 
 ## Contributing
 
-Utsuwa is open source and welcomes contributions. See the [Contributing Guidelines](/docs/community/contributing) for how to get involved.
+Aikeya is open source and welcomes contributions. See the [Contributing Guidelines](/docs/community/contributing) for how to get involved.

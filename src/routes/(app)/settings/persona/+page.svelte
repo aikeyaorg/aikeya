@@ -245,7 +245,7 @@
 	});
 
 	function saveName() {
-		personaStore.updateCard({ name: formName.trim() || 'Utsuwa' });
+		personaStore.updateCard({ name: formName.trim() || 'Aikeya' });
 	}
 
 	function saveSystemPrompt() {
