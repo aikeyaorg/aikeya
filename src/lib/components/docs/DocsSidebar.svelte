@@ -41,7 +41,7 @@
 		<a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer" class="footer-btn" title="GitHub">
 			<Icon name="github" size={14} />
 		</a>
-		<a href=https://x.com target="_blank" rel="noopener noreferrer" class="footer-btn" title="X (Twitter)">
+		<a href=https://x.com/Aikeyasolana target="_blank" rel="noopener noreferrer" class="footer-btn" title="X (Twitter)">
 			<svg 
         		width="14" 
         		height="14" 
